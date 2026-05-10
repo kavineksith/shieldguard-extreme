@@ -1,0 +1,77 @@
+{
+  "manifest_version": 3,
+  "name": "ShieldGuard — Ultimate AdBlocker & Privacy Shielder",
+  "version": "1.0.0",
+  "description": "Open-source privacy-first blocker. Stops ads, trackers, overlays, fingerprinting, anti-adblock walls. Zero telemetry.",
+  "author": "Kavin Eksith (@kavineksith)",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "shieldguard@privacy.open",
+      "strict_min_version": "113.0"
+    },
+    "gecko_android": {
+      "strict_min_version": "121.0"
+    }
+  },
+
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "storage",
+    "tabs",
+    "scripting",
+    "webNavigation",
+    "contextMenus"
+  ],
+
+  "host_permissions": ["*://*/*"],
+
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "scripts": ["browser/compat.js", "background/service-worker.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["browser/compat.js", "content/content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.svg",
+      "48":  "icons/icon48.svg",
+      "128": "icons/icon128.svg"
+    },
+    "default_title": "ShieldGuard"
+  },
+
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+
+  "declarative_net_request": {
+    "rule_resources": [
+      { "id": "ad_rules",      "enabled": true, "path": "rules/ad_rules.json" },
+      { "id": "tracker_rules", "enabled": true, "path": "rules/tracker_rules.json" },
+      { "id": "privacy_rules", "enabled": true, "path": "rules/privacy_rules.json" }
+    ]
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*.svg", "browser/compat.js"],
+      "matches": ["*://*/*"]
+    }
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;"
+  }
+}

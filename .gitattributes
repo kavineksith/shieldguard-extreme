@@ -1,0 +1,17 @@
+# Set default behavior to automatically guess encoding.
+* text=auto
+
+# Standardize line endings to LF for all code files
+*.js text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.svg text eol=lf
+
+# Explicitly mark binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

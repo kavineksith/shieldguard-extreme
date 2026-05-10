@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>ShieldGuard — Settings</title>
+<style>
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #060b16;
+  --bg2:     #0a1220;
+  --bg3:     #0f1c30;
+  --bg4:     #162540;
+  --border:  #1a2f50;
+  --accent:  #00d4aa;
+  --blue:    #0088ff;
+  --danger:  #ff4d6d;
+  --warn:    #ffb347;
+  --success: #4dff91;
+  --text:    #ddeeff;
+  --muted:   #506080;
+  --sidebar-w: clamp(180px, 22vw, 230px);
+  --font-mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
+  --font-sans: 'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --radius:  10px;
+  --fs-xs:   clamp(10px, 1.1vw, 11px);
+  --fs-sm:   clamp(11px, 1.2vw, 12px);
+  --fs-md:   clamp(12px, 1.3vw, 14px);
+  --fs-lg:   clamp(14px, 1.5vw, 16px);
+  --fs-xl:   clamp(18px, 2vw,   22px);
+  --fs-2xl:  clamp(24px, 2.8vw, 32px);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Custom scrollbar */
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky; top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform .25s ease, width .25s ease;
+}
+
+/* Mobile hamburger toggle */
+#sidebar-toggle { display: none; }
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 200;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 90;
+}
+
+/* Logo area */
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: clamp(16px, 3%, 22px) clamp(14px, 3%, 20px) clamp(14px, 3%, 18px);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-logo .icon {
+  width: clamp(30px, 6%, 38px);
+  height: clamp(30px, 6%, 38px);
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px, 3%, 20px);
+  flex-shrink: 0;
+  box-shadow: 0 0 18px rgba(0,212,170,.22);
+}
+.wordmark {
+  font-family: var(--font-mono);
+  font-weight: 700; font-size: var(--fs-md);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.wordmark-sub { font-size: var(--fs-xs); color: var(--muted); }
+
+/* Nav */
+.nav {
+  padding: clamp(8px, 2%, 14px) clamp(8px, 2%, 10px);
+  flex: 1;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: clamp(8px, 1.5%, 10px) clamp(10px, 2%, 14px);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  transition: all .17s;
+  border: none; background: none;
+  width: 100%; text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.nav-item:hover, .nav-item:focus-visible {
+  background: var(--bg3); color: var(--text); outline: none;
+}
+.nav-item.active {
+  background: rgba(0,212,170,.1); color: var(--accent);
+}
+.nav-icon { font-size: clamp(14px, 2%, 16px); width: 20px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--bg4); border: 1px solid var(--border);
+  color: var(--muted); border-radius: 10px;
+  font-family: var(--font-mono); font-size: var(--fs-xs);
+  padding: 1px 6px; white-space: nowrap;
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: clamp(12px, 2%, 16px) clamp(14px, 3%, 20px);
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-xs); color: var(--muted);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+.sidebar-footer a { color: var(--blue); text-decoration: none; }
+.sidebar-footer a:hover { text-decoration: underline; }
+
+/* ── Main content ─────────────────────────────────────────── */
+.main {
+  flex: 1;
+  padding: clamp(20px, 4%, 36px) clamp(16px, 5%, 44px);
+  max-width: 860px;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+/* Pages */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Page header */
+.page-header { margin-bottom: clamp(20px, 4%, 28px); }
+.page-title {
+  font-size: var(--fs-xl);
+  font-weight: 600; color: var(--text);
+  margin-bottom: 4px;
+}
+.page-sub { font-size: var(--fs-sm); color: var(--muted); }
+
+/* ── Cards ─────────────────────────────────────────────────── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(16px, 3%, 22px);
+  margin-bottom: clamp(12px, 2%, 16px);
+}
+.card-title {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase; letter-spacing: .9px;
+  color: var(--muted); margin-bottom: clamp(12px, 2%, 16px);
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── Setting rows ───────────────────────────────────────────── */
+.setting-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: clamp(12px, 2%, 20px);
+  padding: clamp(10px, 2%, 13px) 0;
+  border-bottom: 1px solid rgba(26,47,80,.45);
+}
+.setting-row:last-child { border-bottom: none; padding-bottom: 0; }
+.setting-row:first-of-type { padding-top: 0; }
+.setting-info { display: flex; align-items: flex-start; gap: clamp(10px, 2%, 14px); flex: 1; min-width: 0; }
+.setting-icon { font-size: clamp(16px, 2%, 19px); margin-top: 1px; flex-shrink: 0; }
+.setting-name { font-size: var(--fs-md); font-weight: 500; }
+.setting-desc { font-size: var(--fs-xs); color: var(--muted); margin-top: 3px; line-height: 1.45; }
+
+/* ── Toggle ─────────────────────────────────────────────────── */
+.tog { position: relative; width: 46px; height: 26px; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+.tog input { opacity: 0; width: 0; height: 0; position: absolute; }
+.tog-s {
+  position: absolute; inset: 0;
+  background: var(--bg3); border-radius: 26px;
+  border: 1px solid var(--border); transition: all .22s;
+}
+.tog-s::before {
+  content: ''; position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: var(--muted); border-radius: 50%;
+  transition: all .22s;
+}
+.tog input:checked + .tog-s { background: rgba(0,212,170,.15); border-color: var(--accent); }
+.tog input:checked + .tog-s::before { transform: translateX(20px); background: var(--accent); box-shadow: 0 0 8px rgba(0,212,170,.4); }
+.tog input:focus-visible + .tog-s { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ── Dashboard big stats ───────────────────────────────────── */
+.big-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: clamp(10px, 2%, 14px);
+  margin-bottom: clamp(14px, 3%, 20px);
+}
+.big-stat {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: clamp(14px, 3%, 20px);
+  text-align: center; position: relative; overflow: hidden;
+}
+.big-stat::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.big-stat.total::after    { background: linear-gradient(90deg, var(--accent), transparent); }
+.big-stat.ads::after      { background: linear-gradient(90deg, var(--danger), transparent); }
+.big-stat.trackers::after { background: linear-gradient(90deg, var(--blue),   transparent); }
+.big-stat.overlays::after { background: linear-gradient(90deg, var(--warn),   transparent); }
+.big-stat-num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xl); font-weight: 700;
+  color: var(--accent); line-height: 1; margin-bottom: 5px;
+}
+.big-stat.ads .big-stat-num     { color: var(--danger); }
+.big-stat.trackers .big-stat-num{ color: var(--blue); }
+.big-stat.overlays .big-stat-num{ color: var(--warn); }
+.big-stat-lbl { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .9px; color: var(--muted); }
+
+/* ── Stats table ────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.stat-table { width: 100%; border-collapse: collapse; min-width: 320px; }
+.stat-table th {
+  text-align: left; font-size: var(--fs-xs);
+  text-transform: uppercase; letter-spacing: .8px;
+  color: var(--muted); font-weight: 600;
+  padding: 8px 10px; border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.stat-table td {
+  padding: clamp(8px, 1.5%, 11px) 10px;
+  font-size: var(--fs-sm);
+  border-bottom: 1px solid rgba(26,47,80,.35);
+  vertical-align: middle;
+}
+.stat-table tr:last-child td { border-bottom: none; }
+.stat-table tbody tr:hover td { background: var(--bg3); }
+.mono { font-family: var(--font-mono); color: var(--accent); }
+.bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 80px; }
+.bar-bg { flex: 1; height: 4px; background: var(--bg4); border-radius: 4px; overflow: hidden; min-width: 40px; }
+.bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--blue)); transition: width .5s; }
+.pct { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); min-width: 30px; }
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: clamp(8px, 1.5%, 10px) clamp(14px, 2.5%, 20px);
+  border-radius: 8px;
+  font-family: var(--font-sans); font-size: var(--fs-sm);
+  font-weight: 500; cursor: pointer;
+  transition: all .17s;
+  border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text);
+  min-height: 36px; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover, .btn:focus-visible { background: var(--bg4); outline: none; }
+.btn.primary { background: rgba(0,212,170,.11); border-color: var(--accent); color: var(--accent); }
+.btn.primary:hover { background: rgba(0,212,170,.2); }
+.btn.danger  { background: rgba(255,77,109,.08); border-color: rgba(255,77,109,.3); color: var(--danger); }
+.btn.danger:hover  { background: rgba(255,77,109,.16); border-color: var(--danger); }
+.btn-row { display: flex; gap: 10px; margin-top: clamp(10px, 2%, 14px); flex-wrap: wrap; }
+
+/* ── Input ──────────────────────────────────────────────────── */
+.input-row { display: flex; gap: 8px; margin-bottom: clamp(10px, 2%, 14px); flex-wrap: wrap; }
+.text-input {
+  flex: 1; min-width: 160px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 14px;
+  color: var(--text); font-family: var(--font-mono);
+  font-size: var(--fs-sm); outline: none;
+  transition: border-color .18s;
+}
+.text-input:focus { border-color: var(--blue); }
+.text-input::placeholder { color: var(--muted); }
+
+/* ── Whitelist items ────────────────────────────────────────── */
+.wl-list { display: flex; flex-direction: column; gap: 6px; }
+.wl-empty { color: var(--muted); font-size: var(--fs-sm); padding: 8px 0; }
+.wl-item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color .15s;
+}
+.wl-item:hover { border-color: var(--muted); }
+.wl-domain { font-family: var(--font-mono); font-size: var(--fs-sm); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wl-remove {
+  background: none; border: none; cursor: pointer;
+  color: var(--danger); font-size: 16px;
+  padding: 2px 6px; border-radius: 4px;
+  transition: background .14s; flex-shrink: 0;
+  line-height: 1; min-width: 28px; min-height: 28px;
+  display: flex; align-items: center; justify-content: center;
+}
+.wl-remove:hover { background: rgba(255,77,109,.12); }
+
+/* ── Custom rules editor ────────────────────────────────────── */
+.rules-editor {
+  width: 100%; min-height: clamp(140px, 20vh, 200px);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  font-family: var(--font-mono); font-size: var(--fs-sm);
+  color: var(--text); outline: none; resize: vertical;
+  line-height: 1.7; transition: border-color .18s;
+}
+.rules-editor:focus { border-color: var(--blue); }
+
+.syntax-hint {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 16px;
+  font-family: var(--font-mono); font-size: var(--fs-xs);
+  line-height: 1.9;
+  margin-bottom: 14px;
+}
+.syntax-hint .kw  { color: var(--accent); }
+.syntax-hint .cm  { color: var(--muted); }
+.syntax-hint .ex  { color: var(--warn); }
+
+.rules-status {
+  margin-top: 10px; font-size: var(--fs-xs);
+  color: var(--muted); min-height: 18px;
+}
+
+/* ── About grid ─────────────────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: clamp(10px, 2%, 14px);
+  margin-bottom: clamp(12px, 2%, 16px);
+}
+.about-item {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: clamp(12px, 2%, 16px);
+}
+.about-item-lbl { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; }
+.about-item-val { font-family: var(--font-mono); font-size: var(--fs-md); color: var(--text); }
+.about-item-val.ok { color: var(--success); }
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px 16px;
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+.feature-list li { list-style: none; padding-left: 4px; }
+
+/* ── Toast notification ─────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: clamp(16px, 3%, 24px); right: clamp(16px, 3%, 24px);
+  background: var(--bg3); border: 1px solid var(--accent);
+  border-radius: 10px; padding: 11px 18px;
+  font-size: var(--fs-sm); color: var(--accent);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .28s, transform .28s;
+  pointer-events: none; z-index: 9999;
+  max-width: calc(100vw - 32px);
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── Mobile responsive ──────────────────────────────────────── */
+@media (max-width: 700px) {
+  .hamburger { display: flex; align-items: center; justify-content: center; }
+  .sidebar-backdrop { display: block; opacity: 0; pointer-events: none; transition: opacity .25s; }
+
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    height: 100vh; width: clamp(220px, 75vw, 280px);
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    z-index: 150;
+  }
+
+  #sidebar-toggle:checked ~ .app .sidebar { transform: translateX(0); }
+  #sidebar-toggle:checked ~ .sidebar-backdrop { opacity: 1; pointer-events: auto; }
+
+  .main {
+    padding: clamp(14px, 4%, 20px) clamp(12px, 4%, 20px);
+    padding-top: clamp(56px, 10%, 70px); /* space for hamburger */
+  }
+
+  .big-stats { grid-template-columns: repeat(2, 1fr); }
+  .about-grid { grid-template-columns: repeat(2, 1fr); }
+  .feature-list { grid-template-columns: 1fr; }
+
+  .setting-row { flex-direction: row; gap: 10px; }
+}
+
+@media (max-width: 400px) {
+  .big-stats { grid-template-columns: 1fr 1fr; }
+  .input-row { flex-direction: column; }
+  .btn-row { flex-direction: column; }
+  .btn-row .btn { justify-content: center; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ── High contrast ──────────────────────────────────────────── */
+@media (forced-colors: active) {
+  .tog-s, .card, .sidebar, .stat-table th { border: 1px solid ButtonText; }
+  .btn { border: 1px solid ButtonText; }
+}
+
+/* ── Print ──────────────────────────────────────────────────── */
+@media print {
+  .sidebar, .hamburger, #toast { display: none; }
+  .main { padding: 0; }
+  .card { border: 1px solid #ccc; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile sidebar toggle (checkbox hack — no JS needed for show/hide) -->
+<input type="checkbox" id="sidebar-toggle" hidden aria-hidden="true">
+<label class="sidebar-backdrop" for="sidebar-toggle" aria-hidden="true"></label>
+<label class="hamburger" for="sidebar-toggle" aria-label="Open navigation menu" title="Menu">☰</label>
+
+<div class="app">
+
+  <!-- ── Sidebar ────────────────────────────────────────────── -->
+  <aside class="sidebar" role="navigation" aria-label="Settings navigation">
+    <div class="sidebar-logo">
+      <div class="icon" aria-hidden="true">🛡️</div>
+      <div>
+        <div class="wordmark">ShieldGuard</div>
+        <div class="wordmark-sub">Privacy &amp; Ad Blocker</div>
+      </div>
+    </div>
+
+    <nav class="nav" role="menubar" aria-label="Settings sections">
+      <button class="nav-item active" data-page="dashboard" role="menuitem">
+        <span class="nav-icon" aria-hidden="true">📊</span>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-page="protection" role="menuitem">
+        <span class="nav-icon" aria-hidden="true">🛡️</span>
+        <span>Protection</span>
+      </button>
+      <button class="nav-item" data-page="whitelist" role="menuitem">
+        <span class="nav-icon" aria-hidden="true">🏳️</span>
+        <span>Whitelist</span>
+        <span class="nav-badge" id="wlCount">0</span>
+      </button>
+      <button class="nav-item" data-page="custom-rules" role="menuitem">
+        <span class="nav-icon" aria-hidden="true">📝</span>
+        <span>Custom Rules</span>
+        <span class="nav-badge" id="rulesCount">0</span>
+      </button>
+      <button class="nav-item" data-page="about" role="menuitem">
+        <span class="nav-icon" aria-hidden="true">ℹ️</span>
+        <span>About</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div>v1.0.0 &nbsp;·&nbsp; MV3</div>
+      <div style="margin-top:4px">
+        <a href="https://github.com/shieldguard/shieldguard" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ───────────────────────────────────────────────── -->
+  <main class="main" role="main">
+
+    <!-- ▸ Dashboard ─────────────────────────────────────────── -->
+    <section class="page active" id="page-dashboard" aria-label="Statistics dashboard">
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub">Lifetime blocking statistics across all sites you've visited</p>
+      </div>
+
+      <div class="big-stats" role="region" aria-label="Summary counts">
+        <div class="big-stat total">
+          <div class="big-stat-num" id="gs_total" aria-label="Total items blocked">0</div>
+          <div class="big-stat-lbl">Total Blocked</div>
+        </div>
+        <div class="big-stat ads">
+          <div class="big-stat-num" id="gs_ads">0</div>
+          <div class="big-stat-lbl">Ads</div>
+        </div>
+        <div class="big-stat trackers">
+          <div class="big-stat-num" id="gs_trackers">0</div>
+          <div class="big-stat-lbl">Trackers</div>
+        </div>
+        <div class="big-stat overlays">
+          <div class="big-stat-num" id="gs_overlays">0</div>
+          <div class="big-stat-lbl">Overlays</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📡 Top Blocked Sites</div>
+        <div class="table-wrap">
+          <table class="stat-table" aria-label="Blocked sites table">
+            <thead>
+              <tr>
+                <th scope="col">Domain</th>
+                <th scope="col">Blocked</th>
+                <th scope="col" style="min-width:120px">Share</th>
+              </tr>
+            </thead>
+            <tbody id="topSitesTable">
+              <tr><td colspan="3" style="color:var(--muted);text-align:center;padding:24px">No data yet — browse some sites!</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn danger" id="clearStatsBtn">🗑️ Clear All Stats</button>
+      </div>
+    </section>
+
+    <!-- ▸ Protection ─────────────────────────────────────────── -->
+    <section class="page" id="page-protection" aria-label="Protection settings">
+      <div class="page-header">
+        <h1 class="page-title">Protection</h1>
+        <p class="page-sub">Toggle individual blocking and privacy features globally</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🚫 Blocking</div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">🚫</span>
+            <div>
+              <div class="setting-name">Ad Blocking</div>
+              <div class="setting-desc">Blocks 50+ ad networks at the network layer via <code>declarativeNetRequest</code>. Zero JavaScript overhead — blocked before any bytes hit the wire.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="blockAds" aria-label="Toggle ad blocking"><span class="tog-s"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">👁️</span>
+            <div>
+              <div class="setting-name">Tracker Blocking</div>
+              <div class="setting-desc">Stops analytics beacons, session recorders (Hotjar, FullStory, Clarity), attribution SDKs, pixel trackers, and data-broker scripts.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="blockTrackers" aria-label="Toggle tracker blocking"><span class="tog-s"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">🪟</span>
+            <div>
+              <div class="setting-name">Overlay &amp; Paywall Removal</div>
+              <div class="setting-desc">Real-time DOM sweep + MutationObserver removes cookie banners, GDPR dialogs, subscribe gates, age-gates, and soft/hard paywalls.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="blockOverlays" aria-label="Toggle overlay removal"><span class="tog-s"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">🎨</span>
+            <div>
+              <div class="setting-name">Cosmetic CSS Filters</div>
+              <div class="setting-desc">Injects CSS rules to hide known ad containers and paywall elements that slip past network blocking — a second line of defence.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="cosmeticFilters" aria-label="Toggle cosmetic CSS filters"><span class="tog-s"></span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔮 Privacy</div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">🔮</span>
+            <div>
+              <div class="setting-name">Fingerprint Protection</div>
+              <div class="setting-desc">Injects imperceptible per-session noise into Canvas <code>getImageData</code>/<code>toDataURL</code>, WebGL vendor/renderer strings, AudioContext frequency data, and Navigator hardware hints.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="fingerprintProtection" aria-label="Toggle fingerprint protection"><span class="tog-s"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">🤖</span>
+            <div>
+              <div class="setting-name">Anti-Adblock Bypass</div>
+              <div class="setting-desc">Spoofs <code>window.canRunAds</code>, <code>adsEnabled</code>, and other detection globals. Creates a fake bait "adsbox" element with overridden geometry so detector scripts believe ads loaded normally.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="antiAdblockBypass" aria-label="Toggle anti-adblock bypass"><span class="tog-s"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">🔗</span>
+            <div>
+              <div class="setting-name">Strip Tracking Parameters</div>
+              <div class="setting-desc">Silently removes <code>utm_*</code>, <code>fbclid</code>, <code>gclid</code>, <code>msclkid</code>, <code>ttclid</code>, and 15+ other tracking params from the URL via <code>history.replaceState</code> — no reload needed.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="removeUtmParams" aria-label="Toggle tracking parameter stripping"><span class="tog-s"></span></label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-icon" aria-hidden="true">🔄</span>
+            <div>
+              <div class="setting-name">Scroll Restoration</div>
+              <div class="setting-desc">Forcibly undoes <code>overflow:hidden</code> and <code>position:fixed</code> body locks that paywall scripts inject to prevent scrolling without subscribing.</div>
+            </div>
+          </div>
+          <label class="tog"><input type="checkbox" data-setting="scrollRestoration" aria-label="Toggle scroll restoration"><span class="tog-s"></span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ▸ Whitelist ──────────────────────────────────────────── -->
+    <section class="page" id="page-whitelist" aria-label="Site whitelist">
+      <div class="page-header">
+        <h1 class="page-title">Whitelist</h1>
+        <p class="page-sub">Sites where all ShieldGuard protection is paused</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">➕ Add Site</div>
+        <div class="input-row">
+          <input type="text" class="text-input" id="wlInput"
+            placeholder="example.com" autocomplete="off" spellcheck="false"
+            aria-label="Enter domain to whitelist">
+          <button class="btn primary" id="wlAddBtn" aria-label="Add domain to whitelist">Add Domain</button>
+        </div>
+        <div class="wl-list" id="wlContainer" aria-live="polite">
+          <div class="wl-empty">No whitelisted sites yet.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ▸ Custom Rules ────────────────────────────────────────── -->
+    <section class="page" id="page-custom-rules" aria-label="Custom blocking rules">
+      <div class="page-header">
+        <h1 class="page-title">Custom Rules</h1>
+        <p class="page-sub">Add your own URL filter patterns — same syntax as uBlock Origin</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 Syntax Reference</div>
+        <div class="syntax-hint" role="region" aria-label="Rule syntax examples">
+          <div><span class="kw">||example.com^</span>        <span class="cm">— block all requests to example.com</span></div>
+          <div><span class="kw">||cdn.ads.com/script.js</span> <span class="cm">— block a specific path</span></div>
+          <div><span class="kw">*tracking*</span>             <span class="cm">— block any URL containing "tracking"</span></div>
+          <div><span class="kw">||safe.com^</span>            <span class="cm">— pattern (@@prefix to whitelist instead)</span></div>
+          <div><span class="cm"># Comment lines are ignored</span></div>
+          <div style="margin-top:6px"><span class="ex">@@||allowed.example.com^</span>  <span class="cm">— exception / allow rule</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Your Rules</div>
+        <textarea class="rules-editor" id="rulesEditor"
+          placeholder="# One rule per line&#10;||example-ads.com^&#10;*tracker*&#10;&#10;# Whitelist exception&#10;@@||safe-cdn.example.com^"
+          spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
+          aria-label="Custom blocking rules editor"></textarea>
+        <div class="btn-row">
+          <button class="btn primary" id="saveRulesBtn">💾 Save &amp; Apply</button>
+          <button class="btn"         id="clearRulesBtn">Clear All</button>
+        </div>
+        <div class="rules-status" id="rulesStatus" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ▸ About ──────────────────────────────────────────────── -->
+    <section class="page" id="page-about" aria-label="About ShieldGuard">
+      <div class="page-header">
+        <h1 class="page-title">About ShieldGuard</h1>
+        <p class="page-sub">Open-source, zero-telemetry privacy &amp; ad blocker</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-item"><div class="about-item-lbl">Version</div><div class="about-item-val">1.0.0</div></div>
+        <div class="about-item"><div class="about-item-lbl">Manifest</div><div class="about-item-val">V3</div></div>
+        <div class="about-item"><div class="about-item-lbl">Engine</div><div class="about-item-val" id="engineLbl">Detecting…</div></div>
+        <div class="about-item"><div class="about-item-lbl">Ad Rules</div><div class="about-item-val">50+</div></div>
+        <div class="about-item"><div class="about-item-lbl">Tracker Rules</div><div class="about-item-val">50+</div></div>
+        <div class="about-item"><div class="about-item-lbl">Privacy Rules</div><div class="about-item-val">30+</div></div>
+        <div class="about-item"><div class="about-item-lbl">Telemetry</div><div class="about-item-val ok">Zero</div></div>
+        <div class="about-item"><div class="about-item-lbl">Remote Servers</div><div class="about-item-val ok">None</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🛡️ What ShieldGuard Blocks</div>
+        <ul class="feature-list">
+          <li>✅ Display &amp; video ads</li>
+          <li>✅ Retargeting networks</li>
+          <li>✅ Analytics trackers</li>
+          <li>✅ Session recorders</li>
+          <li>✅ Cookie / GDPR banners</li>
+          <li>✅ Paywall overlays</li>
+          <li>✅ Canvas fingerprinting</li>
+          <li>✅ WebGL fingerprinting</li>
+          <li>✅ Audio fingerprinting</li>
+          <li>✅ UTM tracking params</li>
+          <li>✅ Anti-adblock walls</li>
+          <li>✅ Scroll-lock scripts</li>
+          <li>✅ Attribution pixels</li>
+          <li>✅ Affiliate trackers</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌐 Browser Compatibility</div>
+        <div style="font-size:var(--fs-sm);line-height:1.8;color:var(--muted)">
+          <div>✅ <strong style="color:var(--text)">Chrome / Chromium</strong> — 109+ (Manifest V3)</div>
+          <div>✅ <strong style="color:var(--text)">Firefox</strong> — 113+ (Manifest V3 + DNR)</div>
+          <div>✅ <strong style="color:var(--text)">Edge</strong> — 109+ (Chromium-based)</div>
+          <div>✅ <strong style="color:var(--text)">Brave</strong> — all modern versions</div>
+          <div>✅ <strong style="color:var(--text)">Vivaldi / Opera</strong> — Chromium-based</div>
+          <div>⚠️ <strong style="color:var(--text)">Firefox Android</strong> — 121+ (limited DNR support)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📄 License &amp; Source</div>
+        <div style="font-size:var(--fs-sm);line-height:1.75;color:var(--muted)">
+          MIT License — free to use, fork, audit, and build upon. All blocking runs locally
+          inside your browser. No data ever leaves your device.
+          <br><br>
+          <a href="https://github.com/shieldguard/shieldguard" target="_blank" rel="noopener" style="color:var(--blue)">View source on GitHub →</a>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /.main -->
+</div><!-- /.app -->
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="options.js"></script>
+</body>
+</html>

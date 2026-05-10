@@ -1,0 +1,36 @@
+# OS Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.project
+.settings/
+.classpath
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Extension Build Artifacts
+*.zip
+*.crx
+*.xpi
+*.pem
+
+# Logs and Temp
+logs/
+*.log
+/tmp/
+.temp/
+
+# Browser Metadata
+.web-extension-id
