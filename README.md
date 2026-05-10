@@ -1,7 +1,6 @@
 # 🛡️ ShieldGuard Extreme — Ultimate AdBlocker
 
-> Open-source, zero-telemetry, privacy-first browser extension.  
-> Combines the power of uBlock Origin, AdGuard, Privacy Badger, and Ghostery into one lean, fast extension.
+> **ShieldGuard Extreme** is a high-performance, zero-telemetry privacy engine built for the modern web. It fuses the aggressive blocking power of industry leaders like uBlock Origin and AdGuard with the intelligent tracker prevention of Privacy Badger and Ghostery—all inside a single, lightweight, and hardened framework.
 
 ## ✨ Features
 
