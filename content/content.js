@@ -310,7 +310,8 @@
     if (!SETTINGS.cosmeticFilters) return;
     if (document.getElementById('__sg_css__')) return;
     try {
-      const isYT = location.hostname.includes('youtube.com');
+      const host = String(location.hostname || '').toLowerCase();
+      const isYT = host === 'youtube.com' || host.endsWith('.youtube.com');
       const css = `
 /* ═══ ShieldGuard Cosmetic Filters ═══ */
 [id*="adsense"],[class*="adsense"],
