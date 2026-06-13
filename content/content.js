@@ -458,7 +458,8 @@ ytd-merch-shelf-renderer,
   // ── 9 · YouTube Ad Interceptor ────────────────────────────
   function initYouTubeAdBlocker() {
     if (!SETTINGS.blockAds) return;
-    if (!location.hostname.includes('youtube.com')) return;
+    const host = location.hostname.toLowerCase();
+    if (!(host === 'youtube.com' || host.endsWith('.youtube.com'))) return;
 
     // Auto-click skip buttons and fast-forward video ads
     const ytObserver = new MutationObserver(() => {
